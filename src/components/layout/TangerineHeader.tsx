@@ -1,5 +1,6 @@
 import { Bell, ChevronLeft } from "lucide-react";
 import { USER_NAME } from "../../data/mockData";
+import { OrangeIcon } from "../icons/OrangeIcon";
 
 interface TangerineHeaderProps {
   title?: string;
@@ -12,7 +13,7 @@ export function TangerineLogo({ className = "" }: { className?: string }) {
   return (
     <div className={`flex items-center gap-1.5 ${className}`}>
       <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center">
-        <span className="text-tangerine font-bold text-sm">t</span>
+        <OrangeIcon className="w-4 h-4 text-tangerine" />
       </div>
       <span className="font-semibold text-lg tracking-tight">Tangerine</span>
     </div>

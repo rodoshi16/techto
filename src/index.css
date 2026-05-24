@@ -50,12 +50,12 @@ body {
   }
 }
 
-.sage-pulse::before {
+.tangi-pulse::before {
   content: "";
   position: absolute;
   inset: -4px;
   border-radius: 9999px;
-  background: var(--color-sage);
+  background: var(--color-tangerine);
   animation: pulse-ring 2s ease-in-out infinite;
   z-index: -1;
 }

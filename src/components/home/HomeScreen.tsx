@@ -2,6 +2,7 @@ import { ChevronRight, CreditCard, PiggyBank, Wallet } from "lucide-react";
 import { accounts as mockAccounts, formatCurrency, insights, upcomingBills } from "../../data/mockData";
 import { useApp } from "../../context/AppContext";
 import { TangerineHeader } from "../layout/TangerineHeader";
+import { TangiIcon } from "../icons/TangiIcon";
 import type { AccountType } from "../../types";
 
 const accountIcons: Record<AccountType, typeof Wallet> = {
@@ -22,25 +23,23 @@ export function HomeScreen() {
     <div className="flex flex-col flex-1 min-h-0 bg-[#f7f7f7]">
       <TangerineHeader light />
       <div className="flex-1 overflow-y-auto scroll-hide -mt-2">
-        {/* Sage insight banner */}
+        {/* Tangi insight banner */}
         {topInsight && (
           <button
             type="button"
             onClick={openSage}
-            className="mx-4 mb-4 w-[calc(100%-2rem)] text-left bg-sage-light border border-sage/20 rounded-2xl p-4 active:scale-[0.99] transition-transform"
+            className="mx-4 mb-4 w-[calc(100%-2rem)] text-left bg-tangerine-light border border-tangerine/25 rounded-2xl p-4 active:scale-[0.99] transition-transform"
           >
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full bg-sage flex items-center justify-center shrink-0 text-white text-sm font-bold">
-                S
-              </div>
+              <TangiIcon size={40} />
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-sage uppercase tracking-wide mb-1">
-                  Sage noticed
+                <p className="text-xs font-semibold text-tangerine uppercase tracking-wide mb-1">
+                  Tangi noticed
                 </p>
                 <p className="text-sm font-medium text-gray-900 leading-snug">{topInsight.title}</p>
                 <p className="text-xs text-gray-600 mt-1 line-clamp-2">{topInsight.detail}</p>
               </div>
-              <ChevronRight size={18} className="text-sage shrink-0 mt-1" />
+              <ChevronRight size={18} className="text-tangerine shrink-0 mt-1" />
             </div>
           </button>
         )}

@@ -8,7 +8,7 @@ const TRANSFER_AMOUNT = 200;
 const FROM_ACCOUNT = "chequing";
 const TO_ACCOUNT = "savings";
 
-const SORA_SUGGESTION = `Hey ${USER_NAME} — you're $340 behind on your Europe trip goal. I'd move $${TRANSFER_AMOUNT} from Everyday Chequing to Savings today. You'll still have enough buffer before rent Friday. Want me to do that?`;
+const TANGI_SUGGESTION = `Hey ${USER_NAME} — you're $340 behind on your Europe trip goal. I'd move $${TRANSFER_AMOUNT} from Everyday Chequing to Savings today. You'll still have enough buffer before rent Friday. Want me to do that?`;
 
 type Phase = "speaking" | "awaiting" | "listening" | "processing" | "done";
 
@@ -26,7 +26,7 @@ export function SoraVoice() {
   const { closeSora, openSage, transferFunds } = useApp();
   const [phase, setPhase] = useState<Phase>("speaking");
   const [transcript, setTranscript] = useState("");
-  const [soraLine, setSoraLine] = useState(SORA_SUGGESTION);
+  const [tangiLine, setTangiLine] = useState(TANGI_SUGGESTION);
   const [listening, setListening] = useState(false);
 
   useEffect(() => {
@@ -34,11 +34,11 @@ export function SoraVoice() {
 
     const run = async () => {
       try {
-        const blob = await speakWithSora(SORA_SUGGESTION);
+        const blob = await speakWithSora(TANGI_SUGGESTION);
         if (!cancelled) await playAudioBlob(blob);
       } catch {
         if ("speechSynthesis" in window) {
-          const u = new SpeechSynthesisUtterance(SORA_SUGGESTION);
+          const u = new SpeechSynthesisUtterance(TANGI_SUGGESTION);
           u.lang = "en-CA";
           await new Promise<void>((res) => {
             u.onend = () => res();
@@ -64,13 +64,13 @@ export function SoraVoice() {
     setPhase("processing");
     setTranscript("Yes, move it");
     const { ok, message } = await transferFunds(FROM_ACCOUNT, TO_ACCOUNT, TRANSFER_AMOUNT);
-    setSoraLine(ok ? message : message);
+    setTangiLine(ok ? message : message);
     setPhase("done");
   }, [transferFunds]);
 
   const handleDecline = () => {
     setTranscript("Not right now");
-    setSoraLine("No problem — I'll check in again next week. Your Europe goal is still on my radar.");
+    setTangiLine("No problem — I'll check in again next week. Your Europe goal is still on my radar.");
     setPhase("done");
   };
 
@@ -102,7 +102,7 @@ export function SoraVoice() {
       if (isApproval(said)) approveTransfer();
       else if (isDecline(said)) handleDecline();
       else {
-        setSoraLine("Sorry, I didn't catch that — say yes to move the money, or no to skip.");
+        setTangiLine("Sorry, I didn't catch that — say yes to move the money, or no to skip.");
         setPhase("awaiting");
       }
     };
@@ -118,12 +118,12 @@ export function SoraVoice() {
   const showUser = phase === "awaiting" || phase === "listening" || phase === "processing" || phase === "done";
 
   return (
-    <div className="absolute inset-0 z-50 flex flex-col bg-gradient-to-b from-[#1b4332] to-[#081c15] text-white">
+    <div className="absolute inset-0 z-50 flex flex-col bg-gradient-to-b from-tangerine to-tangerine-dark text-white">
       <header className="flex items-center justify-between px-4 pt-12 pb-4">
         <div>
-          <p className="text-xs text-white/60 uppercase tracking-widest">Voice</p>
-          <h1 className="text-xl font-semibold">Sora</h1>
-          <p className="text-xs text-white/70">Powered by ElevenLabs</p>
+          <p className="text-xs text-white/70 uppercase tracking-widest">Voice</p>
+          <h1 className="text-xl font-semibold">Tangi</h1>
+          <p className="text-xs text-white/80">Powered by ElevenLabs</p>
         </div>
         <button
           type="button"
@@ -161,11 +161,11 @@ export function SoraVoice() {
 
         {speaking || phase === "processing" || phase === "done" ? (
           <p className="text-center text-white/90 text-sm leading-relaxed max-w-[280px]">
-            {phase === "processing" ? "Moving your money now..." : soraLine}
+            {phase === "processing" ? "Moving your money now..." : tangiLine}
           </p>
         ) : (
           <div className="text-center w-full max-w-[300px] space-y-4">
-            <p className="text-center text-white/80 text-sm leading-relaxed">{SORA_SUGGESTION}</p>
+            <p className="text-center text-white/80 text-sm leading-relaxed">{TANGI_SUGGESTION}</p>
             {showUser && (
               <>
                 <div>
@@ -204,7 +204,7 @@ export function SoraVoice() {
               onClick={toggleListen}
               disabled={phase === "processing" || speaking}
               className={`w-16 h-16 rounded-full flex items-center justify-center transition-all disabled:opacity-40 ${
-                listening ? "bg-red-500 scale-110" : "bg-white text-[#1b4332]"
+                listening ? "bg-red-500 scale-110" : "bg-white text-tangerine-dark"
               }`}
             >
               {listening ? <MicOff size={28} /> : <Mic size={28} />}
@@ -213,7 +213,7 @@ export function SoraVoice() {
               {listening
                 ? "Listening..."
                 : speaking
-                  ? "Sora is speaking"
+                  ? "Tangi is speaking"
                   : phase === "processing"
                     ? "Working on it..."
                     : "Tap to say yes or no"}
@@ -229,7 +229,7 @@ export function SoraVoice() {
             }}
             className="text-sm text-white/80 underline"
           >
-            Continue with Sage
+            Continue with Tangi
           </button>
         )}
       </div>

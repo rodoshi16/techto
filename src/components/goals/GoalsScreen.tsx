@@ -10,7 +10,7 @@ export function GoalsScreen() {
       <TangerineHeader title="Savings Goals" showBack={false} />
       <div className="flex-1 overflow-y-auto scroll-hide px-4 pb-4">
         <p className="text-sm text-gray-600 mb-4">
-          Track progress toward what matters. Sage keeps these on her radar.
+          Track progress toward what matters. Tangi keeps these on your radar.
         </p>
         <div className="space-y-4">
           {savingsGoals.map((goal) => {
@@ -42,7 +42,7 @@ export function GoalsScreen() {
                     onClick={openSage}
                     className="mt-3 w-full text-left text-xs bg-amber-50 text-amber-800 rounded-lg px-3 py-2 border border-amber-200"
                   >
-                    Sage: You're ${behind} behind this month — tap to see why
+                    Tangi: You're ${behind} behind this month — tap to see why
                   </button>
                 )}
               </div>

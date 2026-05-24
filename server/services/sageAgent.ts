@@ -45,7 +45,7 @@ const TOOLS: Anthropic.Tool[] = [
   },
   {
     name: "set_weekly_dining_limit",
-    description: "Set a soft weekly dining/delivery spending cap Sage will track.",
+    description: "Set a soft weekly dining/delivery spending cap Tangi will track.",
     input_schema: {
       type: "object",
       properties: { amount: { type: "number" } },
@@ -88,7 +88,7 @@ function executeTool(name: string, input: Record<string, unknown>): string {
   }
 }
 
-const SYSTEM = `You are Sage, a proactive financial companion inside the Tangerine banking app for ${USER_NAME}.
+const SYSTEM = `You are Tangi, a proactive financial companion inside the Tangerine banking app for ${USER_NAME}.
 
 You are NOT a generic chatbot. You:
 - Speak like a financially-savvy friend (warm, concise, Canadian context, CAD)

@@ -62,7 +62,7 @@ export function respondToUser(
     return msg(
       "sage",
       "Done ✅ Soft limit set: **$60/week on dining & delivery**. I'll check in next Tuesday and nudge you if you're trending over. Europe goal should get back on track if you stick to it.",
-      [{ id: "thanks", label: "Thanks, Sage", type: "primary" }]
+      [{ id: "thanks", label: "Thanks, Tangi", type: "primary" }]
     );
   }
 
@@ -181,7 +181,7 @@ export function respondToAction(
     remind: "remind me about rent thursday",
     "flag-disney": "flag disney plus to cancel",
     keep: "keep all subscriptions",
-    thanks: "thanks sage",
+    thanks: "thanks tangi",
     subs: "scan my subscriptions",
   };
   return respondToUser(map[actionId] ?? actionId, memory, onMemoryUpdate);

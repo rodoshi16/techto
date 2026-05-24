@@ -13,7 +13,7 @@ export function SageActionChip({ action, onClick }: SageActionChipProps) {
       onClick={onClick}
       className={`text-xs font-medium px-3 py-1.5 rounded-full transition-colors ${
         primary
-          ? "bg-sage text-white"
+          ? "bg-tangerine text-white"
           : "bg-gray-100 text-gray-700 border border-gray-200"
       }`}
     >

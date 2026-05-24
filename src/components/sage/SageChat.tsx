@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Loader2, Mic, Send } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 import { SageActionChip } from "./SageActionChip";
+import { TangiIcon } from "../icons/TangiIcon";
 
 function formatMessage(text: string) {
   return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) => {
@@ -43,22 +44,19 @@ export function SageChat() {
         <button type="button" onClick={closeSage} className="p-1 -ml-1 text-gray-600">
           <ArrowLeft size={24} />
         </button>
-        <div className="w-10 h-10 rounded-full bg-sage flex items-center justify-center text-white font-bold">
-          S
-        </div>
+        <TangiIcon size={40} />
         <div className="flex-1">
-          <h1 className="font-semibold text-gray-900">Sage</h1>
-          <p className="text-xs text-sage">
-            Your financial companion
-          </p>
+          <h1 className="font-semibold text-gray-900">Tangi</h1>
+          <p className="text-xs text-tangerine">Your financial companion</p>
         </div>
         <button
           type="button"
           onClick={openSora}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sage/10 text-sage text-xs font-medium"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-tangerine/10 text-tangerine text-xs font-medium"
+          aria-label="Talk to Tangi"
         >
           <Mic size={14} />
-          Sora
+          Voice
         </button>
       </header>
 
@@ -76,8 +74,8 @@ export function SageChat() {
               }`}
             >
               {m.role === "sage" && (
-                <p className="text-[10px] font-semibold text-sage mb-1 uppercase tracking-wide">
-                  Sage
+                <p className="text-[10px] font-semibold text-tangerine mb-1 uppercase tracking-wide">
+                  Tangi
                 </p>
               )}
               <div>{formatMessage(m.content)}</div>
@@ -92,9 +90,9 @@ export function SageChat() {
           </div>
         ))}
         {loading && (
-          <div className="flex items-center gap-2 text-sage text-sm">
+          <div className="flex items-center gap-2 text-tangerine text-sm">
             <Loader2 size={16} className="animate-spin" />
-            Sage is checking your accounts...
+            Tangi is checking your accounts...
           </div>
         )}
         <div ref={bottomRef} />
@@ -107,15 +105,15 @@ export function SageChat() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submit()}
-            placeholder="Message Sage..."
+            placeholder="Message Tangi..."
             disabled={loading}
-            className="flex-1 rounded-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sage/30 focus:border-sage disabled:opacity-50"
+            className="flex-1 rounded-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-tangerine/30 focus:border-tangerine disabled:opacity-50"
           />
           <button
             type="button"
             onClick={submit}
             disabled={!input.trim() || loading}
-            className="w-11 h-11 rounded-full bg-sage text-white flex items-center justify-center disabled:opacity-40"
+            className="w-11 h-11 rounded-full bg-tangerine text-white flex items-center justify-center disabled:opacity-40"
           >
             <Send size={18} />
           </button>
