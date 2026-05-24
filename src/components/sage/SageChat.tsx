@@ -49,7 +49,7 @@ export function SageChat() {
         <div className="flex-1">
           <h1 className="font-semibold text-gray-900">Sage</h1>
           <p className="text-xs text-sage">
-            {apiLive ? "Live agent · Claude + tools" : "Offline demo · add API keys"}
+            Your financial companion
           </p>
         </div>
         <button

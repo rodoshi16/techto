@@ -1,6 +1,6 @@
 import type { Account, Insight, SavingsGoal, Transaction } from "../types";
 
-export const USER_NAME = "Rodoshi";
+export const USER_NAME = "Jordan";
 
 export const accounts: Account[] = [
   {

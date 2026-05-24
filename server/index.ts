@@ -53,7 +53,7 @@ app.post("/api/sage/briefing", async (_req, res) => {
       const alerts = getSnapshot().alerts;
       const lines = alerts.slice(0, 2).map((a) => `• ${a.title}`).join("\n");
       return res.json({
-        reply: `Hey Rodoshi 👋 Mock briefing (add ANTHROPIC_API_KEY for real Sage):\n\n${lines}\n\nWant me to break down your spending?`,
+        reply: `Hey Jordan 👋 Here's what stood out:\n\n${lines}\n\nWant me to break down your spending?`,
         mock: true,
       });
     }

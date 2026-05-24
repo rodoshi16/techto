@@ -10,7 +10,7 @@ export function PlaceholderScreen({ title }: PlaceholderScreenProps) {
       <TangerineHeader title={title} />
       <div className="flex-1 flex items-center justify-center p-8">
         <p className="text-sm text-gray-500 text-center">
-          {title} — demo focuses on accounts & Sage
+          Coming soon
         </p>
       </div>
     </div>
