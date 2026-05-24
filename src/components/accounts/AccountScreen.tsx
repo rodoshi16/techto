@@ -1,5 +1,5 @@
 import { ChevronRight } from "lucide-react";
-import { accounts, formatCurrency, transactions } from "../../data/mockData";
+import { accounts as mockAccounts, formatCurrency, transactions } from "../../data/mockData";
 import { useApp } from "../../context/AppContext";
 import { TangerineHeader } from "../layout/TangerineHeader";
 import type { AccountType } from "../../types";
@@ -9,7 +9,8 @@ interface AccountScreenProps {
 }
 
 export function AccountScreen({ type }: AccountScreenProps) {
-  const { setScreen } = useApp();
+  const { setScreen, snapshot } = useApp();
+  const accounts = snapshot?.accounts ?? mockAccounts;
   const account = accounts.find((a) => a.type === type)!;
   const accountTx = transactions.filter((t) => t.accountId === account.id);
 

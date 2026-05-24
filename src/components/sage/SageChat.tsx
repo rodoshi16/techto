@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Mic, Send } from "lucide-react";
+import { ArrowLeft, Loader2, Mic, Send } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 import { SageActionChip } from "./SageActionChip";
 
@@ -22,17 +22,17 @@ function formatMessage(text: string) {
 }
 
 export function SageChat() {
-  const { messages, sendMessage, handleAction, closeSage, openSora } = useApp();
+  const { messages, sendMessage, closeSage, openSora, loading, apiLive } = useApp();
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, loading]);
 
   const submit = () => {
     const t = input.trim();
-    if (!t) return;
+    if (!t || loading) return;
     sendMessage(t);
     setInput("");
   };
@@ -48,7 +48,9 @@ export function SageChat() {
         </div>
         <div className="flex-1">
           <h1 className="font-semibold text-gray-900">Sage</h1>
-          <p className="text-xs text-sage">Your financial companion</p>
+          <p className="text-xs text-sage">
+            {apiLive ? "Live agent · Claude + tools" : "Offline demo · add API keys"}
+          </p>
         </div>
         <button
           type="button"
@@ -61,9 +63,6 @@ export function SageChat() {
       </header>
 
       <div className="flex-1 overflow-y-auto scroll-hide px-4 py-4 space-y-4">
-        <div className="text-center">
-          <p className="text-[10px] text-gray-400 uppercase tracking-widest">Today</p>
-        </div>
         {messages.map((m) => (
           <div
             key={m.id}
@@ -85,17 +84,19 @@ export function SageChat() {
               {m.actions && m.actions.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-3">
                   {m.actions.map((a) => (
-                    <SageActionChip
-                      key={a.id}
-                      action={a}
-                      onClick={() => handleAction(a.id)}
-                    />
+                    <SageActionChip key={a.id} action={a} onClick={() => sendMessage(a.label)} />
                   ))}
                 </div>
               )}
             </div>
           </div>
         ))}
+        {loading && (
+          <div className="flex items-center gap-2 text-sage text-sm">
+            <Loader2 size={16} className="animate-spin" />
+            Sage is checking your accounts...
+          </div>
+        )}
         <div ref={bottomRef} />
       </div>
 
@@ -107,12 +108,13 @@ export function SageChat() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && submit()}
             placeholder="Message Sage..."
-            className="flex-1 rounded-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sage/30 focus:border-sage"
+            disabled={loading}
+            className="flex-1 rounded-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sage/30 focus:border-sage disabled:opacity-50"
           />
           <button
             type="button"
             onClick={submit}
-            disabled={!input.trim()}
+            disabled={!input.trim() || loading}
             className="w-11 h-11 rounded-full bg-sage text-white flex items-center justify-center disabled:opacity-40"
           >
             <Send size={18} />

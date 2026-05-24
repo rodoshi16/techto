@@ -1,17 +1,20 @@
 import { ChevronRight, CreditCard, PiggyBank, Wallet } from "lucide-react";
-import { accounts, formatCurrency, insights, upcomingBills } from "../../data/mockData";
+import { accounts as mockAccounts, formatCurrency, insights, upcomingBills } from "../../data/mockData";
 import { useApp } from "../../context/AppContext";
 import { TangerineHeader } from "../layout/TangerineHeader";
+import type { AccountType } from "../../types";
 
-const accountIcons = {
+const accountIcons: Record<AccountType, typeof Wallet> = {
   chequing: Wallet,
   savings: PiggyBank,
   credit: CreditCard,
 };
 
 export function HomeScreen() {
-  const { setScreen, openSage, memory } = useApp();
+  const { setScreen, openSage, memory, snapshot } = useApp();
+  const accounts = snapshot?.accounts ?? mockAccounts;
   const chequing = accounts.find((a) => a.id === "chequing")!;
+  const savings = accounts.find((a) => a.id === "savings");
   const activeInsights = insights.filter((i) => !memory.resolvedInsights.includes(i.id));
   const topInsight = activeInsights.sort((a, b) => b.urgency - a.urgency)[0];
 
@@ -46,7 +49,7 @@ export function HomeScreen() {
         <div className="mx-4 bg-white rounded-2xl shadow-sm p-5 mb-4">
           <p className="text-sm text-gray-500 mb-1">Total available</p>
           <p className="text-3xl font-bold text-gray-900 tracking-tight">
-            {formatCurrency(chequing.balance + (accounts.find((a) => a.id === "savings")?.balance ?? 0))}
+            {formatCurrency(chequing.balance + (savings?.balance ?? 0))}
           </p>
         </div>
 
@@ -55,7 +58,7 @@ export function HomeScreen() {
           <h2 className="text-sm font-semibold text-gray-900 mb-3">My Accounts</h2>
           <div className="space-y-2">
             {accounts.map((account) => {
-              const Icon = accountIcons[account.type];
+              const Icon = accountIcons[account.type as AccountType];
               const screenId =
                 account.type === "chequing"
                   ? "chequing"

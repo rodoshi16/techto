@@ -2,11 +2,21 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
-import { buildProactiveBriefing, respondToAction, respondToUser } from "../lib/sageEngine";
+import {
+  executeTransfer,
+  fetchBriefing,
+  fetchHealth,
+  fetchSnapshot,
+  sendSageChat,
+  type ApiSnapshot,
+} from "../lib/api";
+import { accounts as mockAccounts } from "../data/mockData";
+import { buildProactiveBriefing, respondToUser } from "../lib/sageEngine";
 import type { ChatMessage, SageMemory, Screen } from "../types";
 
 interface AppContextValue {
@@ -23,6 +33,12 @@ interface AppContextValue {
   handleAction: (actionId: string) => void;
   memory: SageMemory;
   sageInitialized: boolean;
+  apiLive: boolean;
+  soraLive: boolean;
+  snapshot: ApiSnapshot | null;
+  refreshSnapshot: () => Promise<void>;
+  transferFunds: (from: string, to: string, amount: number) => Promise<{ ok: boolean; message: string }>;
+  loading: boolean;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -32,6 +48,24 @@ const defaultMemory: SageMemory = {
   cancelledSubscriptions: [],
 };
 
+function sageMessage(content: string): ChatMessage {
+  return {
+    id: `s-${Date.now()}`,
+    role: "sage",
+    content,
+    timestamp: new Date(),
+  };
+}
+
+function userMessage(content: string): ChatMessage {
+  return {
+    id: `u-${Date.now()}`,
+    role: "user",
+    content,
+    timestamp: new Date(),
+  };
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [screen, setScreen] = useState<Screen>("home");
   const [sageOpen, setSageOpen] = useState(false);
@@ -39,24 +73,65 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [memory, setMemory] = useState<SageMemory>(defaultMemory);
   const [sageInitialized, setSageInitialized] = useState(false);
+  const [apiLive, setApiLive] = useState(false);
+  const [soraLive, setSoraLive] = useState(false);
+  const [snapshot, setSnapshot] = useState<ApiSnapshot | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const patchMemory = useCallback((patch: Partial<SageMemory>) => {
     setMemory((m) => ({ ...m, ...patch }));
   }, []);
 
-  const openSage = useCallback(() => {
+  const refreshSnapshot = useCallback(async () => {
+    try {
+      const s = await fetchSnapshot();
+      setSnapshot(s);
+      if (s.memory) setMemory(s.memory);
+    } catch {
+      /* API offline */
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchHealth()
+      .then((h) => {
+        setApiLive(h.sage);
+        setSoraLive(h.sora);
+        return refreshSnapshot();
+      })
+      .catch(() => setApiLive(false));
+
+    const interval = setInterval(() => {
+      refreshSnapshot();
+    }, 45000);
+    return () => clearInterval(interval);
+  }, [refreshSnapshot]);
+
+  const openSage = useCallback(async () => {
     setSageOpen(true);
     setScreen("sage");
-    if (!sageInitialized) {
-      setMessages([buildProactiveBriefing(defaultMemory)]);
+
+    if (sageInitialized) return;
+
+    setLoading(true);
+    try {
+      const { reply, snapshot: snap } = await fetchBriefing();
+      if (snap) setSnapshot(snap);
+      setMessages([sageMessage(reply)]);
       setSageInitialized(true);
+    } catch {
+      setMessages([buildProactiveBriefing(memory)]);
+      setSageInitialized(true);
+    } finally {
+      setLoading(false);
     }
-  }, [sageInitialized]);
+  }, [sageInitialized, memory]);
 
   const closeSage = useCallback(() => {
     setSageOpen(false);
     setScreen("home");
-  }, []);
+    refreshSnapshot();
+  }, [refreshSnapshot]);
 
   const openSora = useCallback(() => {
     setSoraOpen(true);
@@ -69,46 +144,90 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [sageOpen]);
 
   const sendMessage = useCallback(
-    (text: string) => {
-      const userMsg: ChatMessage = {
-        id: `u-${Date.now()}`,
-        role: "user",
-        content: text,
-        timestamp: new Date(),
-      };
-      const reply = respondToUser(text, memory, patchMemory);
-      setMessages((prev) => [...prev, userMsg, reply]);
+    async (text: string) => {
+      const userMsg = userMessage(text);
+      setMessages((prev) => [...prev, userMsg]);
+      setLoading(true);
+
+      try {
+        if (apiLive) {
+          const history = [...messages, userMsg]
+            .filter((m) => m.role === "user" || m.role === "sage")
+            .map((m) => ({
+              role: m.role === "user" ? ("user" as const) : ("assistant" as const),
+              content: m.content,
+            }));
+          const { reply, snapshot: snap } = await sendSageChat(text, history);
+          if (snap) setSnapshot(snap);
+          setMessages((prev) => [...prev, sageMessage(reply)]);
+        } else {
+          const reply = respondToUser(text, memory, patchMemory);
+          setMessages((prev) => [...prev, reply]);
+        }
+      } catch {
+        const reply = respondToUser(text, memory, patchMemory);
+        setMessages((prev) => [...prev, reply]);
+      } finally {
+        setLoading(false);
+      }
     },
-    [memory, patchMemory]
+    [apiLive, messages, memory, patchMemory]
   );
 
   const handleAction = useCallback(
     (actionId: string) => {
-      const reply = respondToAction(actionId, memory, patchMemory);
       const labels: Record<string, string> = {
-        breakdown: "Yeah, show me",
-        "rent-only": "Just the rent warning",
+        breakdown: "Yeah, show me the breakdown",
+        "rent-only": "Tell me about rent on Friday",
         later: "I'm good for now",
-        "set-limit": "Set $60/week limit",
+        "set-limit": "Set a $60 weekly dining limit",
         "what-if": "What if I cut DoorDash?",
         "scan-subs": "Scan my subscriptions",
-        "no-thanks": "Nope, all good",
-        transfer: "Move $200 from savings",
-        remind: "Remind me Thursday",
-        "flag-disney": "Flag Disney+ to cancel",
-        keep: "Keep everything",
-        thanks: "Thanks, Sage",
-        subs: "My subscriptions",
+        transfer: "Move $200 from savings to chequing",
       };
-      const userMsg: ChatMessage = {
-        id: `u-${Date.now()}`,
-        role: "user",
-        content: labels[actionId] ?? actionId,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, userMsg, reply]);
+      sendMessage(labels[actionId] ?? actionId);
     },
-    [memory, patchMemory]
+    [sendMessage]
+  );
+
+  const transferFunds = useCallback(
+    async (from: string, to: string, amount: number) => {
+      const result = await executeTransfer(from, to, amount);
+      if (result.ok && result.snapshot) {
+        setSnapshot(result.snapshot);
+        const toAcct = result.snapshot.accounts.find((a) => a.id === to);
+        return {
+          ok: true,
+          message: `Done — $${amount} moved to ${toAcct?.name ?? "your account"}.`,
+        };
+      }
+
+      const base = snapshot ?? {
+        accounts: mockAccounts.map((a) => ({ ...a, type: a.type })),
+        transactions: [],
+        goals: [],
+        alerts: [],
+        memory: defaultMemory,
+      };
+      const fromAcct = base.accounts.find((a) => a.id === from);
+      const toAcct = base.accounts.find((a) => a.id === to);
+      if (!fromAcct || !toAcct) return { ok: false, message: "Account not found." };
+      if (fromAcct.balance < amount) {
+        return { ok: false, message: `Not enough in ${fromAcct.name}.` };
+      }
+
+      const updated = base.accounts.map((a) => {
+        if (a.id === from) return { ...a, balance: a.balance - amount };
+        if (a.id === to) return { ...a, balance: a.balance + amount };
+        return a;
+      });
+      setSnapshot({ ...base, accounts: updated });
+      return {
+        ok: true,
+        message: `Done — $${amount} moved to ${toAcct.name}.`,
+      };
+    },
+    [snapshot]
   );
 
   const value = useMemo(
@@ -126,6 +245,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       handleAction,
       memory,
       sageInitialized,
+      apiLive,
+      soraLive,
+      snapshot,
+      refreshSnapshot,
+      transferFunds,
+      loading,
     }),
     [
       screen,
@@ -140,6 +265,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       handleAction,
       memory,
       sageInitialized,
+      apiLive,
+      soraLive,
+      snapshot,
+      refreshSnapshot,
+      transferFunds,
+      loading,
     ]
   );
 
