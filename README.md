@@ -6,7 +6,9 @@ Mobile-first demo of Tangerine banking UI with Sage (proactive AI) and Sora (voi
 
 npm install && npm run dev
 
-Open http://localhost:5173
+Open https://techto-xs3c.vercel.app/
+
+
 
 ## Demo flow
 
