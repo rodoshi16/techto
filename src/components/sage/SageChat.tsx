@@ -22,7 +22,7 @@ function formatMessage(text: string) {
 }
 
 export function SageChat() {
-  const { messages, sendMessage, closeSage, openSora, loading, apiLive } = useApp();
+  const { messages, sendMessage, closeSage, openSora, loading } = useApp();
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
