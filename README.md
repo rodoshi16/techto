@@ -2,7 +2,7 @@
 
 Mobile-first demo of Tangerine banking UI with Sage (proactive AI) and Sora (voice).
 
-<img width="537" height="1135" alt="12A348CC-8F2A-44EA-99C3-D85E678742DD_1_105_c" src="https://github.com/user-attachments/assets/f8f07274-8b2d-47a7-aa97-7ca8ff3ae422" />
+<img width="337" height="935" alt="12A348CC-8F2A-44EA-99C3-D85E678742DD_1_105_c" src="https://github.com/user-attachments/assets/f8f07274-8b2d-47a7-aa97-7ca8ff3ae422" />
 
 
 ## Run
