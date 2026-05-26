@@ -1,6 +1,6 @@
 # Tangi x Tangerine
 
-A mobile-first prototype of the Tangerine banking experience with an embedded AI financial companion (**Tangi**). Tangi monitors account activity, surfaces ranked insights before the user asks, and can execute bounded actions (e.g. internal transfers) through tool use—not a passive Q&A chatbot. Check it out here: techto.vercel.app
+A mobile-first prototype of the Tangerine banking experience with an embedded AI financial companion (**Tangi**). Tangi monitors account activity, surfaces ranked insights before the user asks, and can execute bounded actions (e.g. internal transfers) through tool use—not a passive Q&A chatbot. Check it out here: https://techto-xs3c.vercel.app/ 
 
 > **Positioning:** Tangerine already holds the data. Tangi is the proactive layer that interprets it, warns early, and helps users act in conversation.
 
@@ -145,11 +145,6 @@ Runs frontend and API together:
 ```bash
 npm run dev:all
 ```
-
-| Service | URL |
-|---------|-----|
-| App | http://localhost:5173 |
-| API health | http://localhost:3001/api/health |
 
 ### Run separately
 
@@ -350,15 +345,3 @@ Full checklist: [DEPLOY.md](./DEPLOY.md)
 | `npm run preview` | Serve `dist/` locally |
 | `npm run lint` | ESLint |
 
----
-
-## License
-
-Private / hackathon use unless otherwise specified by the repository owner.
-
----
-
-## Further reading
-
-- [AGENT_SETUP.md](./AGENT_SETUP.md) — Tangi tools, voice pipeline, local troubleshooting  
-- [DEPLOY.md](./DEPLOY.md) — Vercel env vars and deployment verification
