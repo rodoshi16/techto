@@ -1,6 +1,6 @@
-# Tangerine × Tangi
+# Tangi x Tangerine
 
-A mobile-first prototype of the Tangerine banking experience with an embedded AI financial companion (**Tangi**). Tangi monitors account activity, surfaces ranked insights before the user asks, and can execute bounded actions (e.g. internal transfers) through tool use—not a passive Q&A chatbot.
+A mobile-first prototype of the Tangerine banking experience with an embedded AI financial companion (**Tangi**). Tangi monitors account activity, surfaces ranked insights before the user asks, and can execute bounded actions (e.g. internal transfers) through tool use—not a passive Q&A chatbot. Check it out here: techto.vercel.app
 
 > **Positioning:** Tangerine already holds the data. Tangi is the proactive layer that interprets it, warns early, and helps users act in conversation.
 
